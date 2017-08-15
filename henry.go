@@ -7,6 +7,9 @@ import (
 	"time"
 	"github.com/nanobox-io/golang-scribble"
 	"./locker"
+	"./utility"
+	"io/ioutil"
+	"strconv"
 )
 
 type (
@@ -32,11 +35,14 @@ type (
 )
 
 var (
-	taskAdder  = &TaskAdder{}
-	taskLister = &TaskLister{}
-	db         = &scribble.Driver{}
-	counter    = 0
-	key = []byte("Fuck The World-**-Duck The World")
+	taskAdder   = &TaskAdder{}
+	taskLister  = &TaskLister{}
+	db          = &scribble.Driver{}
+	counter     = 0
+	key         = []byte("Fuck The World-**-Duck The World")
+	dbpath      = "/tmp/henry"
+	pwdpath     = "/tmp/henry/henry-password.txt"
+	counterpath = "/tmp/henry/henry-counter.txt"
 )
 
 func initialize() {
@@ -48,11 +54,32 @@ func initialize() {
 	taskLister.Command = kingpin.Command("list", "List All Tasks").Default()
 	taskLister.From = taskLister.Command.Flag("from", "From Task ID").Default("0").Short('f').Int()
 	taskLister.To = taskLister.Command.Flag("to", "To Task ID").Short('t').Int()
+
+	if (!utility.DoesFileExist(pwdpath)) {
+		ioutil.WriteFile(pwdpath, []byte("He Who Must Not Be Named"), 0644)
+	}
+
+	if (!utility.DoesFileExist(counterpath)) {
+		ioutil.WriteFile(counterpath, []byte("0"), 0644)
+	} else {
+		data, err := ioutil.ReadFile(counterpath)
+		if (err == nil) {
+			counter, err = strconv.Atoi(string(data))
+			if err != nil {
+				counter = 0
+			}
+		} else {
+			counter = 0
+		}
+	}
 }
 
 func main() {
 	initialize()
-	db, _ := scribble.New("/tmp/henry", nil)
+	db, _ := scribble.New(dbpath, nil)
+
+	fmt.Println("Yo ",counter)
+
 	kingpin.Version("0.0.1")
 	switch kingpin.Parse() {
 	case taskAdder.Command.FullCommand():
