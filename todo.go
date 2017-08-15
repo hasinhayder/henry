@@ -3,30 +3,46 @@ import (
 	"fmt"
 	"strings"
 	"gopkg.in/alecthomas/kingpin.v2"
+	"time"
 )
+
+type TaskAdder struct{
+	Command *kingpin.CmdClause
+	Task *[]string
+	Due *time.Duration
+	Priority *int
+}
+
+type TaskLister struct{
+	Command *kingpin.CmdClause
+	From *int
+	To *int
+}
+
 var (
-	/*debug   = kingpin.Flag("debug", "Enable debug mode.").Bool()
-	timeout = kingpin.Flag("timeout", "Timeout waiting for ping.").Default("5s").OverrideDefaultFromEnvar("PING_TIMEOUT").Short('t').Duration()
-	ip      = kingpin.Arg("ip", "IP address to ping.").Required().IP()
-	count   = kingpin.Arg("count", "Number of packets to send").Int()*/
-
-	add  = kingpin.Command("add", "Task Command")
-	atask     = add.Arg("task", "Add Task").Strings()
-	adue      = add.Flag("due", "Completion Time").Default("24h").Short('d').Duration()
-	apriority = add.Flag("priority", "Task Priority").Short('p').Default("0").Int()
-
-	list  = kingpin.Command("list", "Task Command").Default()
-	lfrom      = add.Flag("from", "List From").Default("0").Short('f').Int()
-	lto      = add.Flag("to", "List To").Short('t').Int()
-
-
+	taskAdder  = &TaskAdder{}
+	taskLister = &TaskLister{}
 )
+
+
+func initialize(){
+	taskAdder.Command = kingpin.Command("add", "Add Tasks")
+	taskAdder.Task = taskAdder.Command.Arg("task", "The Task").Strings()
+	taskAdder.Due = taskAdder.Command.Flag("due", "Completion Time").Default("24h").Short('d').Duration()
+	taskAdder.Priority = taskAdder.Command.Flag("priority", "Task Priority").Short('p').Default("0").Int()
+
+	taskLister.Command  = kingpin.Command("list", "List All Tasks").Default()
+	taskLister.From      = taskLister.Command.Flag("from", "From Task ID").Default("0").Short('f').Int()
+	taskLister.To      = taskLister.Command.Flag("to", "To Task ID").Short('t').Int()
+}
+
 func main(){
+	initialize()
 	kingpin.Version("0.0.1")
 	switch kingpin.Parse() {
-	case add.FullCommand():
-		fmt.Print("Your Task Is : ", strings.Join(*atask, " "),", Priority: ",*apriority,", Duration: ",adue.Seconds())
-	case list.FullCommand():
+	case taskAdder.Command.FullCommand():
+		fmt.Print("Your Task Is : ", strings.Join(*taskAdder.Task, " "),", Priority: ",*taskAdder.Priority,", Duration: ", taskAdder.Due.Seconds())
+	case taskLister.Command.FullCommand():
 		fmt.Print("Listing ")
 	}
 }
