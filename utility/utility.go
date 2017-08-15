@@ -28,5 +28,10 @@ func GetCounter(counterpath string) (counter int){
 }
 
 func UpdateCounter(counterpath string, counter int){
+	counter++
 	ioutil.WriteFile(counterpath,[]byte(strconv.Itoa(counter)),0644)
+}
+
+func IntToString(i int) string{
+	return strconv.Itoa(i)
 }

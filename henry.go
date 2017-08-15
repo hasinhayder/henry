@@ -37,7 +37,7 @@ var (
 	taskAdder   = &TaskAdder{}
 	taskLister  = &TaskLister{}
 	db          = &scribble.Driver{}
-	counter     = 0
+	counter     = 1
 	key         = []byte("Fuck The World-**-Duck The World")
 	dbpath      = "/tmp/henry"
 	pwdpath     = "/tmp/henry/henry-password.txt"
@@ -59,7 +59,7 @@ func initialize() {
 	}
 
 	if (!utility.DoesFileExist(counterpath)) {
-		ioutil.WriteFile(counterpath, []byte("0"), 0644)
+		ioutil.WriteFile(counterpath, []byte("1"), 0644)
 	} else {
 		counter = utility.GetCounter(counterpath)
 	}
@@ -79,7 +79,8 @@ func main() {
 		task.Timeout = taskAdder.Due.Seconds()
 		task.ID = 1
 
-		db.Write("tasks", "task-1", task)
+		db.Write("tasks", "task-"+utility.IntToString(counter), task)
+		utility.UpdateCounter(counterpath,counter)
 
 	case taskLister.Command.FullCommand():
 		fmt.Print("Listing ")
