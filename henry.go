@@ -9,7 +9,6 @@ import (
 	"./locker"
 	"./utility"
 	"io/ioutil"
-	"strconv"
 )
 
 type (
@@ -62,15 +61,7 @@ func initialize() {
 	if (!utility.DoesFileExist(counterpath)) {
 		ioutil.WriteFile(counterpath, []byte("0"), 0644)
 	} else {
-		data, err := ioutil.ReadFile(counterpath)
-		if (err == nil) {
-			counter, err = strconv.Atoi(string(data))
-			if err != nil {
-				counter = 0
-			}
-		} else {
-			counter = 0
-		}
+		counter = utility.GetCounter(counterpath)
 	}
 }
 
