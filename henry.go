@@ -8,6 +8,7 @@ import (
 	"github.com/nanobox-io/golang-scribble"
 	"./locker"
 	"./utility"
+	"encoding/json"
 	"io/ioutil"
 )
 
@@ -83,6 +84,20 @@ func main() {
 		utility.UpdateCounter(counterpath,counter)
 
 	case taskLister.Command.FullCommand():
-		fmt.Print("Listing ")
+		records, err := db.ReadAll("tasks")
+		if err != nil {
+			fmt.Println("Something went wrong",err)
+		}
+
+		tasks := []Task{}
+		if err := json.Unmarshal([]byte(records), &tasks); err != nil {
+			fmt.Println("Something went wrong",err)
+		}
+
+		for i,_:=range tasks{
+			tasks[i].Title = locker.Decrypt(key,tasks[i].Title )
+		}
+
+		fmt.Println(tasks)
 	}
 }
