@@ -69,8 +69,8 @@ func initialize() {
 func main() {
 	initialize()
 	db, _ := scribble.New(dbpath, nil)
-
 	kingpin.Version("0.0.1")
+
 	switch kingpin.Parse() {
 	case taskAdder.Command.FullCommand():
 		fmt.Print("Your Task Is : ", strings.Join(*taskAdder.Task, " "), ", Priority: ", *taskAdder.Priority, ", Duration: ", taskAdder.Due.Seconds())
@@ -94,7 +94,7 @@ func main() {
 			fmt.Println("Something went wrong",err)
 		}
 
-		for i,_:=range tasks{
+		for i :=range tasks{
 			tasks[i].Title = locker.Decrypt(key,tasks[i].Title )
 		}
 
