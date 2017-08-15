@@ -6,6 +6,7 @@ import (
 	"gopkg.in/alecthomas/kingpin.v2"
 	"time"
 	"github.com/nanobox-io/golang-scribble"
+	"./crypto/crypto.go"
 )
 
 type (
@@ -34,6 +35,7 @@ var (
 	taskAdder  = &TaskAdder{}
 	taskLister = &TaskLister{}
 	db         = &scribble.Driver{}
+	counter    = 0
 )
 
 func initialize() {
@@ -60,7 +62,7 @@ func main() {
 		task.Timeout = taskAdder.Due.Seconds()
 		task.ID = 1
 
-		db.Write("tasks","task-1",task)
+		db.Write("tasks", "task-1", task)
 
 	case taskLister.Command.FullCommand():
 		fmt.Print("Listing ")
