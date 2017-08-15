@@ -1,4 +1,4 @@
-package crypto
+package locker
 
 import (
 	"crypto/aes"
@@ -9,10 +9,8 @@ import (
 	"fmt"
 )
 
-
-
 // encrypt string to base64 crypto using AES
-func encrypt(key []byte, text string) string {
+func Encrypt(key []byte, text string) string {
 	// key := []byte(keyText)
 	plaintext := []byte(text)
 
@@ -37,7 +35,7 @@ func encrypt(key []byte, text string) string {
 }
 
 // decrypt from base64 to decrypted string
-func decrypt(key []byte, cryptoText string) string {
+func Decrypt(key []byte, cryptoText string) string {
 	ciphertext, _ := base64.URLEncoding.DecodeString(cryptoText)
 
 	block, err := aes.NewCipher(key)

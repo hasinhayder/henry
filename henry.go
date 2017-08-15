@@ -6,7 +6,7 @@ import (
 	"gopkg.in/alecthomas/kingpin.v2"
 	"time"
 	"github.com/nanobox-io/golang-scribble"
-	"./crypto/crypto.go"
+	"./locker"
 )
 
 type (
@@ -36,6 +36,7 @@ var (
 	taskLister = &TaskLister{}
 	db         = &scribble.Driver{}
 	counter    = 0
+	key = []byte("Fuck The World-**-Duck The World")
 )
 
 func initialize() {
@@ -57,7 +58,7 @@ func main() {
 	case taskAdder.Command.FullCommand():
 		fmt.Print("Your Task Is : ", strings.Join(*taskAdder.Task, " "), ", Priority: ", *taskAdder.Priority, ", Duration: ", taskAdder.Due.Seconds())
 		var task = &Task{}
-		task.Title = strings.Join(*taskAdder.Task, " ")
+		task.Title = locker.Encrypt(key, strings.Join(*taskAdder.Task, " "))
 		task.Priority = *taskAdder.Priority
 		task.Timeout = taskAdder.Due.Seconds()
 		task.ID = 1
