@@ -26,3 +26,7 @@ func GetCounter(counterpath string) (counter int){
 	}
 	return
 }
+
+func UpdateCounter(counterpath string, counter int){
+	ioutil.WriteFile(counterpath,[]byte(strconv.Itoa(counter)),0644)
+}

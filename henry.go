@@ -68,7 +68,7 @@ func initialize() {
 func main() {
 	initialize()
 	db, _ := scribble.New(dbpath, nil)
-	
+
 	kingpin.Version("0.0.1")
 	switch kingpin.Parse() {
 	case taskAdder.Command.FullCommand():
