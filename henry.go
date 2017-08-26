@@ -6,7 +6,6 @@ import (
 	"gopkg.in/alecthomas/kingpin.v2"
 	"time"
 	"github.com/nanobox-io/golang-scribble"
-	"./locker"
 	"./utility"
 	"encoding/json"
 	"io/ioutil"
@@ -37,9 +36,7 @@ type (
 var (
 	taskAdder   = &TaskAdder{}
 	taskLister  = &TaskLister{}
-	db          = &scribble.Driver{}
 	counter     = 1
-	key         = []byte("Fuck The World-**-Duck The World")
 	dbpath      = "/tmp/henry"
 	pwdpath     = "/tmp/henry/henry-password.txt"
 	counterpath = "/tmp/henry/henry-counter.txt"
@@ -75,27 +72,24 @@ func main() {
 	case taskAdder.Command.FullCommand():
 		fmt.Print("Your Task Is : ", strings.Join(*taskAdder.Task, " "), ", Priority: ", *taskAdder.Priority, ", Duration: ", taskAdder.Due.Seconds())
 		var task = &Task{}
-		task.Title = locker.Encrypt(key, strings.Join(*taskAdder.Task, " "))
+		task.Title = strings.Join(*taskAdder.Task, " ")
 		task.Priority = *taskAdder.Priority
 		task.Timeout = taskAdder.Due.Seconds()
 		task.ID = 1
 
 		db.Write("tasks", "task-"+utility.IntToString(counter), task)
-		utility.UpdateCounter(counterpath,counter)
+		utility.UpdateCounter(counterpath, counter)
 
 	case taskLister.Command.FullCommand():
 		records, err := db.ReadAll("tasks")
+		recordsString := "["+strings.Join(records,",")+"]"
 		if err != nil {
-			fmt.Println("Something went wrong",err)
+			fmt.Println("Something went wrong", err)
 		}
 
 		tasks := []Task{}
-		if err := json.Unmarshal([]byte(records), &tasks); err != nil {
-			fmt.Println("Something went wrong",err)
-		}
-
-		for i :=range tasks{
-			tasks[i].Title = locker.Decrypt(key,tasks[i].Title )
+		if err := json.Unmarshal([]byte(recordsString), &tasks); err != nil {
+			fmt.Println("Something went wrong", err)
 		}
 
 		fmt.Println(tasks)
